@@ -45,13 +45,21 @@ Upstream files we changed (re-apply after a sync conflict):
 | `desktop/public/landing/buzz-wordmark.png` | binary replaced by `make-assets.sh` |
 | `mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png` (16), `LaunchImage.imageset/*.png` (3) | binaries replaced by `make-assets.sh`; `Contents.json` untouched. The icon name is fixed in the Xcode project, so it cannot be overridden from `AppOverrides.xcconfig` |
 | `mobile/ios/Runner/Base.lproj/LaunchScreen.storyboard` | one line: launch background color black to forest (`0.188 0.239 0.204`) |
+| `mobile/lib/shared/theme/theme_catalog.dart` | the `buzz` and `buzz-dark` entries use the AI-HOST palette instead of GitHub's (bg, fg, comment, added) |
+| `mobile/lib/shared/theme/buzz_theme.dart` | the four gradient stop constants (paper to sage; dark `#232b26` to `#141a16`) |
+| `mobile/test/shared/theme/buzz_theme_test.dart` | the test "borrow the GitHub palettes" became "use the AI-HOST palette" and asserts the new values |
 
 Dark mode palette (`#1b211d` background) is our proposal, not taken from new-i.ai. Role colors for
 agents (pine `#2f6b2f` concierge, lake `#1d5a73` chief of staff) come from the AI-HOST product page
 and are not used in the app yet.
 
 Not yet changed (do these deliberately, each needs testing):
-- iOS in-app theme (Flutter, Catppuccin colors in `mobile/lib`) and the iOS bee artwork in `mobile/assets`.
+- iOS pairing-screen artwork: `mobile/assets/images/{buzz-wordmark,buzz-icon,shell-gradient}.png`. The
+  wordmark is animated by a custom shader (`shaders/onboarding_wordmark.frag`) tuned to the bee, so
+  swapping the image needs a simulator or device to judge. Needs Xcode.
+- iOS default chat accent "Chartreuse" (`chat_colors.dart`, `accent_colors.dart`): the accent table is
+  shared with desktop through `test-fixtures/community-theme-accents.json`, so change both sides together.
+- iOS visuals have not been seen on a device or simulator yet (no Xcode); only the Dart tests ran.
 - Remaining "Buzz" text, for example the key-entry page says "sign in to Buzz".
 - Web favicon `desktop/public/buzz.svg` and `desktop/public/app-icon@*.png` (not used by the packaged app).
 - Deep-link scheme `buzz://` (desktop `plugins.deep-link`, iOS `CFBundleURLSchemes`): shared protocol
