@@ -50,8 +50,8 @@ customizations:
 
 ## Branding (company New-I, product AI-HOST)
 
-Identity: company **New-I**, product **AI-HOST**. Bundle IDs: macOS `ai.ai-host.app`; iOS
-`ai.ai-host.mobile` (+ `.NotificationService`), debug `ai.ai-host.dev.mobile`. These apps are for
+Identity: company **New-I**, product **AI-HOST**. Bundle IDs: macOS `ai.new-i.aihost.mac`; iOS
+`ai.new-i.aihost.mobile` (+ `.NotificationService`), debug `ai.new-i.aihost.dev.mobile`. These apps are for
 property hosts working with their team of AI agents; guests use a separate app in another repo.
 
 Branding is an **overlay**, not edits to upstream files. See `FORK.md` for the full list:
@@ -107,7 +107,7 @@ workflows as new files (don't edit upstream's in place, to keep merges clean).
 
 ## Open questions (answer, then delete from here)
 
-- Apple Developer team ID, and registering the App IDs (`ai.ai-host.mobile` and extension, `ai.ai-host.app`).
+- Apple Developer team ID, and registering the App IDs (`ai.new-i.aihost.mobile` and extension, `ai.new-i.aihost.mac`).
 - Which features to hide in v1 (candidates: the ids in `preview-features.json`).
 - Which relay our apps connect to (Block's hosted, or self-hosted).
 - Distribution: direct download with our own updater, TestFlight, or App Store.
