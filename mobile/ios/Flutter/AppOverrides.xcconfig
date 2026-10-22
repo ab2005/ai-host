@@ -1,0 +1,16 @@
+// AI-HOST (New-I) iOS identity. Upstream includes this file last from
+// Debug.xcconfig and Release.xcconfig and gitignores it; this fork
+// force-adds it so upstream's tracked xcconfigs stay untouched.
+// See FORK.md.
+
+APP_DISPLAY_NAME = AI-HOST
+
+// Registered App IDs: ai.ai-host.mobile (+ .NotificationService), and a
+// separate dev identity so debug and release installs can coexist.
+BUNDLE_IDENTIFIER[config=Release] = ai.ai-host.mobile
+BUNDLE_IDENTIFIER[config=Profile] = ai.ai-host.mobile
+BUNDLE_IDENTIFIER[config=Debug] = ai.ai-host.dev.mobile
+
+// TODO: set the AI-HOST Apple Developer team ID. Left empty on purpose:
+// upstream's value is Block's team, which we cannot sign with.
+BUZZ_DEVELOPMENT_TEAM =
