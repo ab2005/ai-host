@@ -71,10 +71,11 @@ int effectiveAccentIndex(String themeName, String storedAccent) {
 }
 
 /// Gradient stops, matching desktop's `--buzz-gradient-*` custom properties.
-const _lightTop = Color(0xFFE6E6B6);
-const _lightBottom = Color(0xFFC4D0DA);
-const _darkTop = Color(0xFF4A4616);
-const _darkBottom = Color(0xFF0A1423);
+/// Fork: AI-HOST (New-I) palette, see brand/desktop/brand.css and FORK.md.
+const _lightTop = Color(0xFFF4F2EB); // AI-HOST paper
+const _lightBottom = Color(0xFFDFE4D9); // AI-HOST sage
+const _darkTop = Color(0xFF232B26);
+const _darkBottom = Color(0xFF141A16);
 
 /// The Buzz gradient for the app's top section, or null when [themeName] is not
 /// a Buzz theme — in which case the section keeps its default frosted fill.
