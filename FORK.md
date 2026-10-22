@@ -23,8 +23,37 @@ tests are unaffected. If upstream changes either function, re-apply the `option_
 The keychain service name is permanent once users store secrets under it: never change it after
 the first release without a migration.
 
+## Visual identity (macOS + iOS)
+
+Theme from new-i.ai: paper `#f4f2eb`, ink `#242722`, terracotta accent `#b54d32`, forest `#303d34`,
+sage `#dfe4d9`; Arial headings with Georgia italic emphasis. Mark: an arch (the "∩" in "where new ∩
+now") as a doorway, with a terracotta dot. Preview: `brand/assets/preview.html`.
+
+Additive files (never conflict): `brand/desktop/brand.css` (theme overrides, unlayered so they win
+over upstream's layered rules), `brand/desktop/icons/` (macOS icon set, referenced by
+`brand/desktop/tauri.conf.json`), `brand/assets/` (SVG sources, iOS 1024 icon, preview),
+`brand/scripts/make-assets.sh` (regenerates every raster asset below from the SVGs; macOS only).
+
+Upstream files we changed (re-apply after a sync conflict):
+
+| File | Change |
+|------|--------|
+| `desktop/src/main.tsx` | one line: `import "../../brand/desktop/brand.css";` after `globals.css` |
+| `desktop/src/shared/ui/buzz-logo/BuzzMark.tsx`, `FlappingBee.tsx`, `BuzzLogoAnimation.tsx` | bodies replaced with the arch mark; exports and prop types unchanged so ~18 call sites stay as upstream |
+| `desktop/src/features/onboarding/ui/LandingBees.tsx` | replaced: mark top-left plus line artwork instead of the animated bee field |
+| `desktop/src/features/onboarding/ui/MachineOnboardingFlow.tsx` | start page: `alt="AI-HOST"`, wordmark max width, tagline "Your property team, *in one place.*" (about 8 lines) |
+| `desktop/public/landing/buzz-wordmark.png` | binary replaced by `make-assets.sh` |
+| `mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png` (16), `LaunchImage.imageset/*.png` (3) | binaries replaced by `make-assets.sh`; `Contents.json` untouched. The icon name is fixed in the Xcode project, so it cannot be overridden from `AppOverrides.xcconfig` |
+| `mobile/ios/Runner/Base.lproj/LaunchScreen.storyboard` | one line: launch background color black to forest (`0.188 0.239 0.204`) |
+
+Dark mode palette (`#1b211d` background) is our proposal, not taken from new-i.ai. Role colors for
+agents (pine `#2f6b2f` concierge, lake `#1d5a73` chief of staff) come from the AI-HOST product page
+and are not used in the app yet.
+
 Not yet changed (do these deliberately, each needs testing):
-- Icons (`desktop/src-tauri/icons/`, `mobile/ios/Runner/Assets.xcassets`): need AI-HOST artwork.
+- iOS in-app theme (Flutter, Catppuccin colors in `mobile/lib`) and the iOS bee artwork in `mobile/assets`.
+- Remaining "Buzz" text, for example the key-entry page says "sign in to Buzz".
+- Web favicon `desktop/public/buzz.svg` and `desktop/public/app-icon@*.png` (not used by the packaged app).
 - Deep-link scheme `buzz://` (desktop `plugins.deep-link`, iOS `CFBundleURLSchemes`): shared protocol
   with relay-generated links. Change only together with the relay.
 - User-visible "Buzz" strings in `desktop/src` (~260 files) and `mobile/lib` (~190 files).
