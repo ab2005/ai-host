@@ -1,0 +1,9 @@
+{
+  "productName": "AI-HOST",
+  "identifier": "ai.new-i.aihost.mac",
+  "bundle": {
+    "macOS": {
+      "infoPlist": "../../brand/desktop/Info.plist"
+    }
+  }
+}

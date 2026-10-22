@@ -48,18 +48,19 @@ customizations:
 5. Record every customization in `FORK.md` (create it with the first one): what, why, which files,
    how to re-apply. It is the checklist for resolving sync conflicts.
 
-## Branding checklist (change in as few places as possible)
+## Branding (company New-I, product AI-HOST)
 
-Desktop (`desktop/src-tauri/`):
-- `tauri.conf.json`: `productName` ("Buzz"), `identifier` (`xyz.block.buzz.app`), `version`, and
-  `plugins.updater` (endpoints is empty upstream; our updater needs its own endpoint and signing pubkey).
-- `icons/`, `Info.plist`, `Entitlements.plist`.
+Identity: company **New-I**, product **AI-HOST**. Bundle IDs: macOS `ai.new-i.aihost.mac`; iOS
+`ai.new-i.aihost.mobile` (+ `.NotificationService`), debug `ai.new-i.aihost.dev.mobile`. These apps are for
+property hosts working with their team of AI agents; guests use a separate app in another repo.
 
-iOS (`mobile/ios/`):
-- Bundle IDs derive from `$(BUNDLE_IDENTIFIER)` (extensions: `.NotificationService`, `.RunnerTests`).
-  The signing team comes from `$(BUZZ_DEVELOPMENT_TEAM)`. Set these via xcconfig/env, not by editing the pbxproj.
-- App name, icons, and the `NotificationService` extension. Push uses `BuzzPushKit` and a push gateway,
-  so confirm which backend our build points at before shipping.
+Branding is an **overlay**, not edits to upstream files. See `FORK.md` for the full list:
+- macOS: `brand/desktop/tauri.conf.json` + `brand/desktop/Info.plist`, merged at build time with
+  `tauri build --config brand/desktop/tauri.conf.json`. Never edit `desktop/src-tauri/tauri.conf.json`.
+- iOS: `mobile/ios/Flutter/AppOverrides.xcconfig` (upstream includes it last and gitignores it; we
+  force-add it). Never edit upstream's `Debug.xcconfig`/`Release.xcconfig`: upstream tests assert them.
+- User-facing strings that cannot be overlaid (iOS `Info.plist`) are listed in `FORK.md`.
+- Keep "Buzz" and Block branding out of user-facing strings and out of the store listings.
 
 Never commit signing certificates, provisioning profiles, API keys, or the updater private key.
 
@@ -106,7 +107,7 @@ workflows as new files (don't edit upstream's in place, to keep merges clean).
 
 ## Open questions (answer, then delete from here)
 
-- Brand name, bundle ID prefix, Apple developer team ID.
+- Apple Developer team ID, and registering the App IDs (`ai.new-i.aihost.mobile` and extension, `ai.new-i.aihost.mac`).
 - Which features to hide in v1 (candidates: the ids in `preview-features.json`).
 - Which relay our apps connect to (Block's hosted, or self-hosted).
 - Distribution: direct download with our own updater, TestFlight, or App Store.
