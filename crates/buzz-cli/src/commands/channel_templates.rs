@@ -15,7 +15,11 @@ use crate::error::CliError;
 /// Tauri bundle identifier for the production desktop app. `dirs::data_dir()`
 /// joined with this segment matches `app.path().app_data_dir()` exactly
 /// (Tauri resolves app-data as the platform data dir plus the identifier).
-const PROD_BUNDLE_IDENTIFIER: &str = "xyz.block.buzz.app";
+const PROD_BUNDLE_IDENTIFIER: &str = match option_env!("BUZZ_BUILD_APP_IDENTIFIER") {
+    // Forks set BUZZ_BUILD_APP_IDENTIFIER to their Tauri bundle identifier.
+    Some(identifier) => identifier,
+    None => "xyz.block.buzz.app",
+};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ChannelTemplateRecord {
