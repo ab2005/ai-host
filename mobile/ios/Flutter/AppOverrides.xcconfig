@@ -5,12 +5,11 @@
 
 APP_DISPLAY_NAME = AI-HOST
 
-// Registered App IDs: ai.ai-host.mobile (+ .NotificationService), and a
+// Registered App IDs: ai.new-i.aihost.mobile (+ .NotificationService), and a
 // separate dev identity so debug and release installs can coexist.
-BUNDLE_IDENTIFIER[config=Release] = ai.ai-host.mobile
-BUNDLE_IDENTIFIER[config=Profile] = ai.ai-host.mobile
-BUNDLE_IDENTIFIER[config=Debug] = ai.ai-host.dev.mobile
+BUNDLE_IDENTIFIER[config=Release] = ai.new-i.aihost.mobile
+BUNDLE_IDENTIFIER[config=Profile] = ai.new-i.aihost.mobile
+BUNDLE_IDENTIFIER[config=Debug] = ai.new-i.aihost.dev.mobile
 
-// TODO: set the AI-HOST Apple Developer team ID. Left empty on purpose:
-// upstream's value is Block's team, which we cannot sign with.
-BUZZ_DEVELOPMENT_TEAM =
+// Apple Developer team: new-i, inc.
+BUZZ_DEVELOPMENT_TEAM = 3XBDMLQ9NV
