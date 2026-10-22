@@ -1,0 +1,175 @@
+/*
+ * AI-HOST (New-I) desktop theme overlay.
+ *
+ * Imported once from desktop/src/main.tsx, after globals.css. Upstream's theme
+ * rules live in cascade layers; this file is unlayered, so it wins without
+ * !important. Palette is from new-i.ai (paper, ink, terracotta, forest, sage).
+ * Colors are "H S% L%" triplets to match upstream's HSL token format.
+ * See FORK.md ("Visual identity").
+ */
+
+:root {
+  --radius: 0.625rem;
+  --background: 50 100% 98.8%; /* white  #fffef9 */
+  --foreground: 96 6.8% 14.3%; /* ink    #242722 */
+  --card: 50 100% 98.8%;
+  --card-foreground: 96 6.8% 14.3%;
+  --popover: 50 100% 98.8%;
+  --popover-foreground: 96 6.8% 14.3%;
+  --secondary: 87 16.9% 87.3%; /* sage   #dfe4d9 */
+  --secondary-foreground: 96 6.8% 14.3%;
+  --muted: 87 16.9% 87.3%;
+  --muted-foreground: 86 3.6% 38.2%; /* muted  #62655e */
+  --accent: 87 16.9% 87.3%;
+  --accent-foreground: 96 6.8% 14.3%;
+  --border: 66 11.6% 83.1%; /* line   #d8d9cf */
+  --input: 66 11.6% 83.1%;
+  --ring: 12 56.7% 45.3%; /* accent #b54d32 */
+  --sidebar: 47 29% 93.9%; /* paper  #f4f2eb */
+  --sidebar-background: 47 29% 93.9%;
+  --sidebar-foreground: 96 6.8% 14.3%;
+  --sidebar-accent: 50 100% 98.8%;
+  --sidebar-accent-foreground: 96 6.8% 14.3%;
+  --sidebar-border: 66 11.6% 83.1%;
+  --sidebar-ring: 12 56.7% 45.3%;
+  /* Active rows are a soft sage chip, not a solid fill. */
+  --sidebar-active: 87 16.9% 87.3%;
+  --sidebar-active-foreground: 96 6.8% 14.3%;
+
+  /* Sidebar / canvas gradient (upstream: yellow to blue). */
+  --buzz-gradient-light-top: #f4f2eb;
+  --buzz-gradient-light-bottom: #dfe4d9;
+  --buzz-gradient-dark-top: #232b26;
+  --buzz-gradient-dark-bottom: #141a16;
+  --buzz-content-dark: 140 10% 11.8%;
+
+  /* Hosted-community surfaces (upstream: pale yellow). */
+  --buzz-hosted-community-divider-border: 216 217 207;
+  --buzz-hosted-community-action-bg: 223 228 217;
+  --buzz-hosted-community-action-bg-hover: 211 217 203;
+}
+
+.dark {
+  --background: 140 10% 11.8%; /* night  #1b211d */
+  --foreground: 47 29% 93.9%; /* paper  #f4f2eb */
+  --card: 142 10.3% 15.3%;
+  --card-foreground: 47 29% 93.9%;
+  --popover: 142 10.3% 15.3%;
+  --popover-foreground: 47 29% 93.9%;
+  --secondary: 140 9.3% 19%;
+  --secondary-foreground: 47 29% 93.9%;
+  --muted: 140 9.3% 19%;
+  --muted-foreground: 82 7.7% 72%;
+  --accent: 140 9.3% 19%;
+  --accent-foreground: 47 29% 93.9%;
+  --border: 139 12.1% 25.9%;
+  --input: 139 12.1% 25.9%;
+  --ring: 14 58.8% 55.3%;
+  --sidebar: 144 10.2% 9.6%;
+  --sidebar-background: 144 10.2% 9.6%;
+  --sidebar-foreground: 47 29% 93.9%;
+  --sidebar-accent: 142 10.3% 15.3%;
+  --sidebar-accent-foreground: 47 29% 93.9%;
+  --sidebar-border: 140 9.3% 19%;
+  --sidebar-ring: 14 58.8% 55.3%;
+  --sidebar-active: 140 9.3% 19%;
+  --sidebar-active-foreground: 47 29% 93.9%;
+}
+
+/* Start page and onboarding (upstream: chartreuse, light blue, olive). */
+.buzz-onboarding-neutral-theme {
+  --buzz-welcome-chartreuse: #dfe4d9;
+  --buzz-onboarding-shell-bottom: #f4f2eb;
+  --buzz-onboarding-cta-label: #f4f2eb;
+  --buzz-onboarding-backup-ink: #8f3a24;
+  --background: 50 100% 98.8%;
+  --foreground: 96 6.8% 14.3%;
+  --primary: 96 6.8% 14.3%;
+  --primary-foreground: 47 29% 93.9%;
+  --secondary: 87 16.9% 87.3%;
+  --muted: 87 16.9% 87.3%;
+  --muted-foreground: 86 3.6% 38.2%;
+  --accent: 87 16.9% 87.3%;
+  --border: 66 11.6% 83.1%;
+  --input: 66 11.6% 83.1%;
+  --ring: 12 56.7% 45.3%;
+  --buzz-onboarding-emoji-picker-background: 244, 242, 235;
+  --buzz-onboarding-avatar-accent-bg: 223 228 217;
+  --buzz-onboarding-avatar-accent-fg: 48 61 52;
+  --buzz-onboarding-avatar-action-bg: 36 39 34;
+  --buzz-onboarding-avatar-action-fg: 244 242 235;
+  --buzz-onboarding-avatar-control-fg: 48 61 52;
+}
+
+/* Welcome page: calm paper, no dot grid. */
+.buzz-onboarding-neutral-theme.buzz-startup-shell.buzz-onboarding-welcome {
+  background-color: #f4f2eb;
+  background-image: none;
+  --buzz-onboarding-shell-bottom: #f4f2eb;
+}
+
+/* Security subview (upstream: navy). */
+.buzz-onboarding-security-theme {
+  --buzz-onboarding-shell-bottom: #1b211d;
+  --background: 140 12% 8%;
+  --card: 142 10.3% 13%;
+  --popover: 142 10.3% 11%;
+}
+
+/* New-I voice for brand moments: tight Arial, Georgia italic for emphasis. */
+.aihost-display {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+.aihost-display em {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  color: #b54d32;
+}
+
+/* The mark's dot breathes slowly while the app loads. */
+@keyframes aihost-dot-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+}
+.aihost-mark-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: aihost-dot-breathe 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aihost-mark-dot {
+    animation: none;
+  }
+}
+
+/* Logo wrapper: upstream's yellow dotted background and 466px bee sizing. */
+.buzz-logo--background {
+  background-color: #f4f2eb;
+  background-image: none;
+}
+.buzz-logo__mark {
+  inline-size: min(120px, calc(100vw - 32px));
+}
+.buzz-logo--compact .buzz-logo__mark {
+  inline-size: 100%;
+}
+
+/* Onboarding pages after the welcome page: sage-to-paper gradient, no dot grid. */
+.buzz-onboarding-neutral-theme.buzz-startup-shell {
+  background-image: linear-gradient(
+    to bottom,
+    var(--buzz-welcome-chartreuse),
+    var(--buzz-onboarding-shell-bottom)
+  );
+}
