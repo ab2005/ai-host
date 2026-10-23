@@ -145,3 +145,12 @@ Repository secrets: `IOS_DIST_CERT_P12_BASE64`, `IOS_DIST_CERT_PASSWORD`, `IOS_P
 Apple Distribution certificate, the two App Store provisioning profiles and the team API key
 "ai-host CI" (App Manager). The certificate and profiles expire 2027-10-23: reissue them then.
 Originals and the private key are kept off-repo in `~/aihost-signing/` (backed up in iCloud Drive).
+
+## macOS signing and notarization (CI)
+
+`brand/scripts/ci/macos-signing.sh` imports the Developer ID Application certificate into a temporary
+keychain and writes the App Store Connect API key for `notarytool`; `brand/scripts/package-macos.sh`
+then signs with the hardened runtime, notarizes and staples the app and the `.dmg`, and fails unless
+Apple answers "Accepted". Without the certificate secret the build stays ad-hoc signed (as before).
+Secrets: `MACOS_DEVID_CERT_P12_BASE64`, `MACOS_DEVID_CERT_PASSWORD` plus the `ASC_*` key secrets above.
+The certificate expires 2027-11-22: reissue it then. Files are in `~/aihost-signing/` (`devid.*`).
