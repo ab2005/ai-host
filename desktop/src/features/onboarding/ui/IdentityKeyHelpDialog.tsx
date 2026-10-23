@@ -124,15 +124,15 @@ function IdentityKeyHelpBody() {
   return (
     <>
       <p>
-        Buzz will create a Nostr identity with two parts: a private key that
-        signs you in and a public key you can safely share. You can find your
-        public identity anytime in Buzz settings.
+        Your identity key is how AI-HOST knows it’s you. It comes in two parts:
+        a private key, like the key to your office, which lets you in and should
+        stay with you, and a public key, like a name badge, which your team and
+        AI agents use to recognize you and is safe to share.
       </p>
       <p>
-        This identity belongs to you, not Buzz, and can move with you to another
-        device or compatible Nostr app. Because only you control the private
-        key, Buzz can’t reset or recover it. Keep a backup somewhere safe, and
-        never share it.
+        The key belongs to you, not to AI-HOST, so we can’t reset it or get it
+        back if it’s lost. Save a copy somewhere safe, like a password manager,
+        and never send your private key to anyone.
       </p>
     </>
   );
