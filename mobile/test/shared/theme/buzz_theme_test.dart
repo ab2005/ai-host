@@ -10,18 +10,17 @@ void main() {
       expect(findTheme(buzzDarkThemeName), isNotNull);
     });
 
-    test('borrow the GitHub palettes', () {
+    // Fork: AI-HOST (New-I) palette instead of upstream's GitHub borrow (FORK.md).
+    test('use the AI-HOST palette', () {
       final buzz = findTheme(buzzThemeName)!;
-      final github = findTheme('github-light')!;
-      expect(buzz.bg, github.bg);
-      expect(buzz.fg, github.fg);
-      expect(buzz.comment, github.comment);
+      expect(buzz.bg, const Color(0xFFFFFEF9));
+      expect(buzz.fg, const Color(0xFF242722));
+      expect(buzz.comment, const Color(0xFF62655E));
 
       final buzzDark = findTheme(buzzDarkThemeName)!;
-      final githubDark = findTheme('github-dark')!;
-      expect(buzzDark.bg, githubDark.bg);
-      expect(buzzDark.fg, githubDark.fg);
-      expect(buzzDark.comment, githubDark.comment);
+      expect(buzzDark.bg, const Color(0xFF1B211D));
+      expect(buzzDark.fg, const Color(0xFFF4F2EB));
+      expect(buzzDark.comment, const Color(0xFFB9BDB2));
     });
 
     test('are a light/dark pair', () {

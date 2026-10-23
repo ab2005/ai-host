@@ -341,13 +341,14 @@ export function MachineOnboardingFlow({
               transitionKey={`machine-identity-${transitionDirection}`}
             >
               <img
-                alt="Buzz"
-                className="w-full max-w-[600px]"
+                alt="AI-HOST"
+                className="w-full max-w-[420px]"
                 src="/landing/buzz-wordmark.png"
               />
-              <p className="mt-2 max-w-[560px] text-center text-2xl font-normal leading-none text-foreground">
-                Your people, your agents, your projects —<br />
-                all in one place.
+              <p className="aihost-display mt-6 max-w-[640px] text-center text-5xl text-foreground">
+                Your property team,
+                <br />
+                <em>in one place.</em>
               </p>
               {error ? (
                 <p className="mt-4 text-sm text-destructive">{error}</p>

@@ -80,23 +80,23 @@ const themeCatalog = <ThemeColors>[
     added: Color(0xFF70BF56),
     deleted: Color(0xFFF26D78),
   ),
-  // Buzz and Buzz Dark are first-party: they borrow the GitHub Light / GitHub
-  // Dark palettes wholesale and are distinguished only by the branded gradient
-  // painted across the app's top section (see buzz_theme.dart).
+  // Buzz and Buzz Dark are first-party. Upstream borrows the GitHub palettes;
+  // this fork uses the AI-HOST (New-I) palette instead (see FORK.md), with the
+  // branded gradient painted across the app's top section (buzz_theme.dart).
   ThemeColors(
     name: 'buzz',
-    bg: Color(0xFFFFFFFF),
-    fg: Color(0xFF24292E),
-    comment: Color(0xFF6A737D),
-    added: Color(0xFF28A745),
+    bg: Color(0xFFFFFEF9),
+    fg: Color(0xFF242722),
+    comment: Color(0xFF62655E),
+    added: Color(0xFF2F6B2F),
     deleted: Color(0xFFD73A49),
   ),
   ThemeColors(
     name: 'buzz-dark',
-    bg: Color(0xFF24292E),
-    fg: Color(0xFFE1E4E8),
-    comment: Color(0xFF6A737D),
-    added: Color(0xFF34D058),
+    bg: Color(0xFF1B211D),
+    fg: Color(0xFFF4F2EB),
+    comment: Color(0xFFB9BDB2),
+    added: Color(0xFF6BBF7A),
     deleted: Color(0xFFEA4A5A),
   ),
   ThemeColors(

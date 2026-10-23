@@ -18,7 +18,12 @@ pub(crate) fn keyring_service() -> &'static str {
             .get_or_init(|| dev_keyring_service(std::env::var("BUZZ_DEV_KEYRING_SERVICE").ok()))
             .as_str()
     } else {
-        "buzz-desktop"
+        // Forks set BUZZ_BUILD_KEYRING_SERVICE so their release build does not
+        // share the upstream Buzz keychain blob (see FORK.md).
+        match option_env!("BUZZ_BUILD_KEYRING_SERVICE") {
+            Some(service) => service,
+            None => "buzz-desktop",
+        }
     }
 }
 
