@@ -131,3 +131,17 @@ file path, so it survives syncs). Do not re-enable them: they need Block's secre
 
 **Not built yet:** the browser-test gate (`brand/scripts/e2e-gate.sh` runs automatically when it
 exists), signing and notarization, iOS to TestFlight, Intel Macs, and an agent to resolve conflicts.
+
+## iOS build and signing (CI)
+
+`.github/workflows/aihost-ios.yml`, manual runs. Default: unsigned build plus a check that the display
+name is AI-HOST and the bundle id is `ai.new-i.aihost.mobile`. `sign=true` adds a signed App Store `.ipa`
+(`brand/scripts/ci/ios-signing.sh` installs the certificate and profiles, switches the Runner and
+NotificationService targets to manual signing in the runner's checkout only, and writes
+`ExportOptions.plist`). `upload=true` sends it to TestFlight with `altool`.
+
+Repository secrets: `IOS_DIST_CERT_P12_BASE64`, `IOS_DIST_CERT_PASSWORD`, `IOS_PROFILE_APP_BASE64`,
+`IOS_PROFILE_NSE_BASE64`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8_BASE64`. They come from the
+Apple Distribution certificate, the two App Store provisioning profiles and the team API key
+"ai-host CI" (App Manager). The certificate and profiles expire 2027-10-23: reissue them then.
+Originals and the private key are kept off-repo in `~/aihost-signing/` (backed up in iCloud Drive).
