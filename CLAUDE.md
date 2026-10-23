@@ -26,9 +26,11 @@ customizations:
 - Release lanes are independent upstream, with **different version numbers**:
   - Desktop: tags `desktop-vX.Y.Z` (currently 0.5.x); app version in `desktop/src-tauri/tauri.conf.json`.
   - Mobile: tags `mobile-vX.Y.Z-rc.N` (currently 0.25.x); immutable release candidates.
-- Sync from upstream **tags**, not upstream `main`, so we only absorb released states.
-- Use merges, not rebases or force-pushes, on shared branches.
-- Our releases are tagged `<upstream version>-<brand>.N`, e.g. `desktop-v0.5.29-acme.1`.
+- Release builds come from upstream **tags** plus our layer replayed on top (see "Syncing" below), never
+  from upstream `main`. `main` is our development line. Land our changes on `main` through PRs.
+- Use merges, not rebases or force-pushes, on `main`. Generated `release/*` branches are the exception:
+  the pipeline rebuilds them.
+- Our releases are tagged `desktop-vX.Y.Z-aihost.N` (X.Y.Z is Block's version, N is our sub-version), e.g. `desktop-v0.5.29-aihost.1`.
   Our tag must never collide with an upstream tag name. Block does the same for its internal
   signed macOS and iOS builds (`squareup/buzz-releases`, desktop version suffix `-block`), so this
   scheme follows upstream's own convention.
@@ -84,17 +86,20 @@ Toolchains are pinned with Hermit. From the repo root: `. ./bin/activate-hermit`
 
 ## Syncing a new upstream release
 
-1. `git fetch upstream --tags`; list new tags with `git tag -l 'desktop-v*' --sort=-v:refname | head`
-   (and `mobile-v*`).
-2. Read the upstream release notes for every release since our last sync (desktop: GitHub releases;
-   mobile: `mobile/CHANGELOG.md`).
-3. Branch `sync/desktop-vX.Y.Z` (or `sync/mobile-vX.Y.Z`) from `main` and `git merge <upstream tag>`.
-4. Resolve conflicts guided by `FORK.md`. Re-apply our intent on top of upstream's new code; don't just
-   pick a side. If upstream refactored the area, redo the customization against the new structure.
-5. **New-feature report:** list upstream `feat:` commits since our last sync and say for each whether it
-   is on in our build. New features default to on; ask before hiding one.
-6. Run the build/test gates, then open a PR to `main`. Don't merge it yourself.
-7. Version and tag per the scheme above. Never reuse or move an existing tag.
+Automated by `.github/workflows/aihost-release.yml` (see FORK.md, "Release pipeline"). Do not merge
+upstream release tags into `main`: upstream tags sit on side branches, and `main` holds unreleased
+upstream work, so a merge would ship code Block has not released.
+
+Our customization layer is every non-merge commit in `upstream/main..main`. For a release, the
+pipeline takes the official tag and replays that layer onto it (`brand/scripts/ci/build-release-branch.sh`).
+To do it by hand:
+
+1. `git fetch upstream --tags`; pick the tag (`git tag -l 'desktop-v*' --sort=-v:refname | head`).
+2. `git checkout -b release/<tag>-aihost.N <tag>` then `git cherry-pick -x $(git rev-list --reverse --no-merges upstream/main..main)`.
+3. On a conflict, re-apply our intent on top of upstream's new code using FORK.md (don't just pick a
+   side), and land the fix on `main` so the next run replays cleanly.
+4. Run `brand/scripts/gate.sh`. If a new upstream `feat:` shipped, say whether it is on in our build.
+5. Never reuse or move an existing tag.
 
 ## Upstream release mechanics (don't copy blindly)
 
