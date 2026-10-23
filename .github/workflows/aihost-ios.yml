@@ -68,7 +68,8 @@ jobs:
       - name: Check the branding landed in the build
         run: |
           app=mobile/build/ios/iphoneos/Runner.app
-          name=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$app/Info.plist")
+          plutil -p "$app/Info.plist" | grep -E 'CFBundle(Name|DisplayName|Identifier)' || true
+          name=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$app/Info.plist" 2>/dev/null || /usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$app/Info.plist")
           id=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist")
           echo "display name: $name, bundle id: $id"
           [[ "$name" == "AI-HOST" ]] || { echo "::error::Display name is '$name', expected AI-HOST"; exit 1; }
