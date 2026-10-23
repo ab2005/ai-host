@@ -67,7 +67,8 @@ jobs:
 
       - name: Check the branding landed in the build
         run: |
-          app=mobile/build/ios/iphoneos/Runner.app
+          app=$(ls -d mobile/build/ios/iphoneos/*.app | head -1)
+          echo "built app: $app"
           name=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$app/Info.plist")
           id=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist")
           echo "display name: $name, bundle id: $id"
@@ -122,6 +123,6 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: aihost-ios-unsigned
-          path: mobile/build/ios/iphoneos/Runner.app
+          path: mobile/build/ios/iphoneos/*.app
           retention-days: 7
           if-no-files-found: error
