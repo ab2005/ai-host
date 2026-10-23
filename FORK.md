@@ -87,3 +87,45 @@ for the scheme, a matching relay change.
 
 Verify before the first release: run `brand/build-desktop.sh`, launch the app, and confirm in
 Keychain Access that secrets are stored under `ai-host-desktop`, not `buzz-desktop`.
+
+## Release pipeline
+
+`.github/workflows/aihost-release.yml` builds AI-HOST from the newest official Buzz Desktop release
+and publishes it to this repository's Releases. It runs every 6 hours and on demand.
+
+**Versioning.** Tag and release name: `desktop-vX.Y.Z-aihost.N`. X.Y.Z is Block's version and N is
+our sub-version (1 for the first build of a base, then 2, 3, ... for fixes to our layer on the same
+base). The app's internal version stays X.Y.Z; N is stamped as the build number (`CFBundleVersion`).
+A SemVer suffix would sort *below* X.Y.Z and break updaters, and Apple allows only three numbers.
+
+**Source model.** Upstream tags sit on side branches and `main` holds unreleased upstream work, so we
+never merge a tag into `main`. Our layer is `git rev-list --no-merges upstream/main..main`; the
+pipeline checks out the official tag and cherry-picks that layer onto it
+(`brand/scripts/ci/build-release-branch.sh`), then restores our `.github/workflows`. The result is
+pushed as `release/desktop-vX.Y.Z-aihost.N`. Tested: all 7 of our commits replay cleanly onto
+`desktop-v0.5.28`.
+
+**Steps.** detect (`detect-upstream.sh`) -> release source -> gate (`brand/scripts/gate.sh`: brand
+check, desktop lint/types/tests, Rust tests, mobile analysis/tests) -> build
+(`brand/scripts/build-desktop.sh`) -> package (`package-macos.sh`: zip, dmg, SHA-256) -> release.
+Nothing is published if any step fails; the pipeline opens an issue instead. A cherry-pick conflict
+also opens an issue naming the files.
+
+**Releasing a fix to our own layer.** Land it on `main`, then run the workflow manually with
+`upstream_tag` set (e.g. `desktop-v0.5.28`); it builds the next sub-version.
+
+**Draft or live.** Releases are created as drafts: review, then click Publish. Set the repository
+variable `AIHOST_AUTO_PUBLISH` to `true` to publish automatically.
+
+**One-time setup (needs you).**
+1. Create a fine-grained personal access token on `ab2005/ai-host` with Contents, Workflows, Issues
+   and Actions: read and write. Store it as the repository secret `AIHOST_BOT_TOKEN`. (The default
+   token cannot push commits that touch `.github/workflows`, and its pushes do not start workflows.)
+2. Optional: Developer ID signing (set `CODESIGN_IDENTITY` and import the certificate) so users need
+   not use "Open Anyway". Until then builds are ad-hoc signed.
+
+**Upstream workflows are disabled** in the fork (all 27 `disabled_manually`; GitHub tracks this per
+file path, so it survives syncs). Do not re-enable them: they need Block's secrets and runners.
+
+**Not built yet:** the browser-test gate (`brand/scripts/e2e-gate.sh` runs automatically when it
+exists), signing and notarization, iOS to TestFlight, Intel Macs, and an agent to resolve conflicts.
