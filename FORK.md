@@ -107,9 +107,11 @@ pushed as `release/desktop-vX.Y.Z-aihost.N`. Tested: all 7 of our commits replay
 
 **Steps.** detect (`detect-upstream.sh`) -> release source -> gate (`brand/scripts/gate.sh`: brand
 check, desktop lint/types/tests, Rust tests, mobile analysis/tests) -> build
-(`brand/scripts/build-desktop.sh`) -> package (`package-macos.sh`: zip, dmg, SHA-256) -> release.
+(`brand/build-desktop.sh`) -> package (`package-macos.sh`: zip, dmg, SHA-256) -> release.
 Nothing is published if any step fails; the pipeline opens an issue instead. A cherry-pick conflict
 also opens an issue naming the files.
+
+**Debug runs.** Set `skip_gate` when running manually to skip the 35-minute test gate while fixing build or packaging steps. Such a release is always a draft, labeled as ungated.
 
 **Releasing a fix to our own layer.** Land it on `main`, then run the workflow manually with
 `upstream_tag` set (e.g. `desktop-v0.5.28`); it builds the next sub-version.
