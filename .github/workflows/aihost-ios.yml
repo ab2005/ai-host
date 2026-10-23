@@ -1,9 +1,12 @@
 name: AI-HOST iOS build
 
-# Builds the iOS app (Flutter, Runner scheme) on a macOS runner WITHOUT code signing,
-# to prove it compiles with our branding overlay (mobile/ios/Flutter/AppOverrides.xcconfig).
-# Signed builds and TestFlight upload come later, once the Apple Distribution certificate,
-# provisioning profiles and App Store Connect API key exist as repository secrets.
+# Builds the iOS app (Flutter, Runner scheme) on a macOS runner. By default it builds WITHOUT
+# code signing, to prove it compiles with our branding overlay
+# (mobile/ios/Flutter/AppOverrides.xcconfig). With sign=true it also produces a signed .ipa
+# (Apple Distribution certificate + App Store profiles from repository secrets), and with
+# upload=true it sends that build to TestFlight (App Store Connect API key secrets).
+# Secrets: IOS_DIST_CERT_P12_BASE64, IOS_DIST_CERT_PASSWORD, IOS_PROFILE_APP_BASE64,
+# IOS_PROFILE_NSE_BASE64, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8_BASE64. See FORK.md.
 # Manual only. Run it on `main` or on a release branch (release/desktop-vX.Y.Z-aihost.N).
 
 on:
@@ -15,6 +18,16 @@ on:
         type: string
       run_tests:
         description: "Also run the mobile tests before building."
+        required: false
+        type: boolean
+        default: false
+      sign:
+        description: "Also build a signed .ipa (App Store distribution)."
+        required: false
+        type: boolean
+        default: false
+      upload:
+        description: "Upload the signed build to TestFlight (needs sign)."
         required: false
         type: boolean
         default: false
@@ -60,6 +73,51 @@ jobs:
           echo "display name: $name, bundle id: $id"
           [[ "$name" == "AI-HOST" ]] || { echo "::error::Display name is '$name', expected AI-HOST"; exit 1; }
           [[ "$id" == "ai.new-i.aihost.mobile" ]] || { echo "::error::Bundle id is '$id', expected ai.new-i.aihost.mobile"; exit 1; }
+
+      - name: Install signing certificate and profiles
+        if: inputs.sign
+        env:
+          IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+          IOS_PROFILE_APP_BASE64: ${{ secrets.IOS_PROFILE_APP_BASE64 }}
+          IOS_PROFILE_NSE_BASE64: ${{ secrets.IOS_PROFILE_NSE_BASE64 }}
+        run: brand/scripts/ci/ios-signing.sh
+
+      - name: Build the signed .ipa
+        if: inputs.sign
+        working-directory: mobile
+        run: |
+          flutter build ipa --release \
+            --build-number "${{ github.run_number }}" \
+            --export-options-plist "$RUNNER_TEMP/ExportOptions.plist" \
+            --dart-define=BUZZ_PUSH_GATEWAY_URL=https://push.example
+
+      - name: Upload to TestFlight
+        if: inputs.sign && inputs.upload
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          echo "$ASC_KEY_P8_BASE64" | base64 --decode > "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          ipa=$(ls mobile/build/ios/ipa/*.ipa)
+          xcrun altool --upload-app --type ios --file "$ipa" \
+            --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+          rm -f "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+
+      - name: Remove the signing keychain
+        if: always() && inputs.sign
+        run: |
+          [[ -n "${KEYCHAIN_PATH:-}" ]] && security delete-keychain "$KEYCHAIN_PATH" || true
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: inputs.sign
+        with:
+          name: aihost-ios-ipa
+          path: mobile/build/ios/ipa/*.ipa
+          retention-days: 7
+          if-no-files-found: error
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
