@@ -42,6 +42,7 @@ Upstream files we changed (re-apply after a sync conflict):
 | `desktop/src/shared/ui/buzz-logo/BuzzMark.tsx`, `FlappingBee.tsx`, `BuzzLogoAnimation.tsx` | bodies replaced with the arch mark; exports and prop types unchanged so ~18 call sites stay as upstream |
 | `desktop/src/features/onboarding/ui/LandingBees.tsx` | replaced: mark top-left plus line artwork instead of the animated bee field |
 | `desktop/src/features/onboarding/ui/MachineOnboardingFlow.tsx` | start page: `alt="AI-HOST"`, wordmark max width, tagline "Your property team, *in one place.*" (about 8 lines) |
+| `desktop/src/features/onboarding/ui/IdentityKeyHelpDialog.tsx` | `IdentityKeyHelpBody()` copy rewritten in plain language for property managers (office key and name badge, no "Nostr"); the iOS app has no equivalent text yet |
 | `desktop/public/landing/buzz-wordmark.png` | binary replaced by `make-assets.sh` |
 | `mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png` (16), `LaunchImage.imageset/*.png` (3) | binaries replaced by `make-assets.sh`; `Contents.json` untouched. The icon name is fixed in the Xcode project, so it cannot be overridden from `AppOverrides.xcconfig` |
 | `mobile/ios/Runner/Base.lproj/LaunchScreen.storyboard` | one line: launch background color black to forest (`0.188 0.239 0.204`) |
