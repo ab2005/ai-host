@@ -62,8 +62,62 @@ jobs:
           UPSTREAM_TAG: ${{ inputs.upstream_tag }}
         run: brand/scripts/ci/detect-upstream.sh
 
+  gate:
+    name: Gate (tests)
+    needs: detect
+    if: needs.detect.outputs.needed == 'true' && inputs.skip_gate != true
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ secrets.AIHOST_BOT_TOKEN }}
+      UPSTREAM_TAG: ${{ needs.detect.outputs.upstream_tag }}
+      VERSION: ${{ needs.detect.outputs.version }}
+      SUBVERSION: ${{ needs.detect.outputs.subversion }}
+      RELEASE_TAG: ${{ needs.detect.outputs.release_tag }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.AIHOST_BOT_TOKEN }}
+
+      - name: Git identity
+        run: |
+          git config user.name "aihost-release[bot]"
+          git config user.email "aihost-release@users.noreply.github.com"
+
+      # The same replay as the build job, so the tests see exactly the code that ships.
+      - name: Build release source (upstream tag + our layer)
+        id: source
+        run: brand/scripts/ci/build-release-branch.sh
+
+      - name: Report a conflict
+        if: failure() && steps.source.outcome == 'failure'
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "Release blocked: our changes conflict with $UPSTREAM_TAG" \
+            --body-file "$RUNNER_TEMP/aihost-conflicts.md"
+
+      - uses: cashapp/activate-hermit@cea9af7913204a965fd488637a8d1811bba2e616 # v1
+
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2.9.1
+        with:
+          key: gate
+          workspaces: |
+            .
+            desktop/src-tauri
+
+      - name: Gate (brand check, desktop, Rust, mobile tests)
+        run: brand/scripts/gate.sh
+
+      - name: Report a failed gate
+        if: failure() && steps.source.outcome != 'failure'
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "Release $RELEASE_TAG failed its tests" \
+            --body "The test gate failed for upstream $UPSTREAM_TAG. Nothing was published. Logs: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
   build:
-    name: Build, test and package
+    name: Build and package
     needs: detect
     if: needs.detect.outputs.needed == 'true'
     runs-on: macos-latest
@@ -107,10 +161,6 @@ jobs:
             .
             desktop/src-tauri
 
-      - name: Gate (brand check, desktop, Rust, mobile tests)
-        if: inputs.skip_gate != true
-        run: brand/scripts/gate.sh
-
       - name: Build AI-HOST.app
         run: brand/build-desktop.sh
 
@@ -147,16 +197,18 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
-      - name: Report a failed gate or build
+      - name: Report a failed build
         if: failure() && steps.source.outcome != 'failure'
         run: |
           gh issue create --repo "$GITHUB_REPOSITORY" \
-            --title "Release $RELEASE_TAG failed its checks" \
-            --body "The gate or build failed for upstream $UPSTREAM_TAG. Nothing was published. Logs: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            --title "Release $RELEASE_TAG failed to build" \
+            --body "The build failed for upstream $UPSTREAM_TAG. Nothing was published. Logs: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
   publish:
     name: Create release
-    needs: [detect, build]
+    needs: [detect, gate, build]
+    # The gate is skipped on debug runs (skip_gate); otherwise it must have passed.
+    if: ${{ !cancelled() && needs.build.result == 'success' && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

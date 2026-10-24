@@ -105,11 +105,13 @@ pipeline checks out the official tag and cherry-picks that layer onto it
 pushed as `release/desktop-vX.Y.Z-aihost.N`. Tested: all 7 of our commits replay cleanly onto
 `desktop-v0.5.28`.
 
-**Steps.** detect (`detect-upstream.sh`) -> release source -> gate (`brand/scripts/gate.sh`: brand
-check, desktop lint/types/tests, Rust tests, mobile analysis/tests) -> build
-(`brand/build-desktop.sh`) -> package (`package-macos.sh`: zip, dmg, SHA-256) -> release.
-Nothing is published if any step fails; the pipeline opens an issue instead. A cherry-pick conflict
-also opens an issue naming the files.
+**Steps.** detect (`detect-upstream.sh`), then two jobs run in parallel, each replaying the release
+source on its own runner: **gate** (`brand/scripts/gate.sh`: brand check, desktop lint/types/tests, Rust
+tests, mobile analysis/tests; about 40 minutes) and **build** (`brand/build-desktop.sh`, then
+`package-macos.sh`: Developer ID signing, notarization, zip, dmg, SHA-256; about 20 + 40 minutes with a warm
+cache). The release is created only when both succeed. Nothing is published if any step fails; the
+pipeline opens an issue instead. A cherry-pick conflict also opens an issue naming the files. The first
+full run took about 70 minutes sequentially; parallel jobs aim for about 60.
 
 **Debug runs.** Set `skip_gate` when running manually to skip the 35-minute test gate while fixing build or packaging steps. Such a release is always a draft, labeled as ungated.
 
